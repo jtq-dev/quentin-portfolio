@@ -1,0 +1,180 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base layout */
+html, body, #root { min-height: 100%; }
+body { overflow-x: hidden; text-rendering: geometricPrecision; }
+body { background: radial-gradient(1200px 700px at 60% 35%, rgba(255,255,255,0.06), transparent 55%), var(--bg); }
+a { text-decoration: none; }
+
+/* Theme tokens */
+:root{
+  color-scheme: dark;
+
+  --bg: #070A12;
+  --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,0.70);
+  --border: rgba(255,255,255,.12);
+  --panel: rgba(255,255,255,.06);
+}
+
+:root[data-theme="light"]{
+  color-scheme: light;
+
+  --bg: #f2f3f8;
+  --text: rgba(23, 26, 40, .92);
+  --muted: rgba(23, 26, 40, .65);
+  --border: rgba(23, 26, 40, .12);
+  --panel: rgba(255,255,255,.55);
+}
+
+body{
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Film grain overlay */
+.grain::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:20;
+  opacity:.09;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+/* In light mode reduce grain + change blend */
+:root[data-theme="light"] .grain::before{
+  opacity: .06;
+  mix-blend-mode: multiply;
+}
+
+/* Big menu text */
+.menu-big{
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  font-size: clamp(3.2rem, 6.2vw, 5.6rem);
+  line-height: 0.92;
+  color: rgba(235,236,255,0.92);
+  text-shadow: 0 0 40px rgba(160,190,255,0.10);
+}
+
+/* Outlined text like the reference */
+.outline-text{
+  color: transparent;
+  -webkit-text-stroke: 1.2px rgba(235, 236, 255, 0.55);
+  text-stroke: 1.2px rgba(235, 236, 255, 0.55);
+  letter-spacing: -0.03em;
+}
+
+:root[data-theme="light"] .outline-text{
+  -webkit-text-stroke: 1.2px rgba(35, 38, 55, 0.45);
+  text-stroke: 1.2px rgba(35, 38, 55, 0.45);
+}
+
+/* Filled name subtle glow */
+.name-fill{
+  color: rgba(235, 236, 255, 0.92);
+  text-shadow: 0 0 32px rgba(170, 195, 255, .12);
+}
+
+:root[data-theme="light"] .name-fill{
+  color: rgba(20, 23, 40, 0.88);
+  text-shadow: 0 0 32px rgba(40, 60, 120, .10);
+}
+/* ---------- Premium cursor ---------- */
+:root {
+  --cursor-ring: rgba(235,236,255,.55);
+  --cursor-glow: rgba(160,190,255,.22);
+  --cursor-dot: rgba(235,236,255,.75);
+}
+
+/* Hide system cursor on fine pointers (desktop) */
+@media (pointer: fine) {
+  body.cursor-on,
+  body.cursor-on a,
+  body.cursor-on button {
+    cursor: none !important;
+  }
+}
+
+.cursor-ring,
+.cursor-dot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-999px,-999px,0);
+  will-change: transform, opacity;
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
+  border-radius: 999px;
+  background: var(--cursor-dot);
+  filter: drop-shadow(0 0 10px rgba(170,195,255,.25));
+}
+
+.cursor-ring {
+  width: 44px;
+  height: 44px;
+  margin-left: -22px;
+  margin-top: -22px;
+  border-radius: 999px;
+  border: 1.2px solid var(--cursor-ring);
+
+  /* hollow + halo */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 0 26px var(--cursor-glow);
+
+  backdrop-filter: blur(2px);
+  transition: width .18s ease, height .18s ease, margin .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+/* Hover over interactive elements -> feels “alive” */
+.cursor-ring.cursor--hover {
+  width: 64px;
+  height: 64px;
+  margin-left: -32px;
+  margin-top: -32px;
+  border-color: rgba(235,236,255,.75);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 42px rgba(160,190,255,.28);
+}
+
+/* Mouse down -> subtle “press” */
+.cursor-ring.cursor--down {
+  width: 36px;
+  height: 36px;
+  margin-left: -18px;
+  margin-top: -18px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 18px rgba(160,190,255,.18);
+}
+.cursor-dot.cursor--down {
+  transform: translate3d(var(--x, 0), var(--y, 0), 0) scale(0.85);
+}
+
+/* Light theme tuning */
+:root[data-theme="light"] {
+  --cursor-ring: rgba(23, 26, 40, .35);
+  --cursor-glow: rgba(40, 80, 160, .12);
+  --cursor-dot: rgba(23, 26, 40, .55);
+}
+.exp-card:hover {
+  box-shadow: 0 40px 110px rgba(0,0,0,0.28);
+  transform: translateY(-1px);
+  transition: 180ms ease;
+}
